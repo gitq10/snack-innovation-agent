@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snack Innovation Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input[type="text"] { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #45a049; }
+        #reportOutput { margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Your Snack Innovation Report</h1>
 
+        <label for="productType">Product Type:</label>
+        <select id="productType">
+            <option value="Snack">Snack</option>
+            <option value="Beverage">Beverage</option>
+        </select>
+
+        <label for="ingredients">Ingredients (e.g., Coconut, Mango):</label>
+        <input type="text" id="ingredients" value="Coconut" placeholder="Enter ingredients, comma-separated">
+
+        <label for="region">Region:</label>
+        <input type="text" id="region" value="Mexico" placeholder="Enter region (e.g., Mexico, Global)">
+
+        <button onclick="generateReport()">Generate Report</button>
+
+        <div id="reportOutput">
+            </div>
+    </div>
+
+    <script>
+        // This is where our JavaScript "Magic Messenger" will go later!
+        function generateReport() {
+            alert("Report generation functionality will be added here!");
+        }
+    </script>
+</body>
+</html>
