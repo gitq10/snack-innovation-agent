@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,76 +9,84 @@
             font-family: Arial, sans-serif;
             margin: 20px;
             line-height: 1.6;
+            color: #333;
         }
 
-        h1 { color: #333; }
-        h2 { color: #444; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
-        h3 { color: #555; margin-top: 15px; }
-        h4 { color: #666; margin-top: 10px; }
+        h1 { color: #222; }
+        h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 30px; }
+        h3 { color: #444; margin-top: 20px; }
+        h4 { color: #555; margin-top: 15px; }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px;
             border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
         select, input[type="text"] {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
+            padding: 10px;
+            margin-bottom: 20px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             box-sizing: border-box;
+            font-size: 16px;
         }
 
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
         }
 
         button:hover { background-color: #45a049; }
 
         #reportOutput {
-            margin-top: 30px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
+            margin-top: 40px;
+            border-top: 2px solid #eee;
+            padding-top: 30px;
         }
 
         #reportOutput table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin: 15px 0;
         }
 
         #reportOutput th, #reportOutput td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
         }
 
-        #reportOutput th { background-color: #f2f2f2; }
+        #reportOutput th { background-color: #f2f2f2; font-weight: bold; }
 
         #reportOutput ul {
             list-style-type: disc;
-            margin-left: 20px;
+            margin-left: 25px;
+            padding: 5px 0;
+        }
+
+        #reportOutput p {
+            margin-bottom: 10px;
         }
 
         #reportOutput img {
             max-width: 100%;
             height: auto;
             display: block;
-            margin: 15px auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -118,7 +126,6 @@
             reportOutput.innerHTML = '<p>Generating your report... this may take a moment.</p>';
 
             try {
-                // Construct an absolute URL for the Netlify function
                 const url = window.location.protocol + "//" + window.location.host + "/.netlify/functions/generate-report";
 
                 const response = await fetch(url, {
@@ -135,7 +142,23 @@
                 }
 
                 const data = await response.json();
-                reportOutput.innerHTML = marked.parse(data.report);
+                
+                // Render the markdown text
+                const reportText = data.report;
+                const images = data.images;
+
+                let renderedHtml = marked.parse(reportText);
+
+                // Find where to insert images
+                const imagePlaceholders = renderedHtml.match(/<p>.*Section D.*<\/p>/g);
+                if (imagePlaceholders) {
+                    imagePlaceholders.forEach((placeholder, index) => {
+                        const imageHtml = images[index] ? `<img src="${images[index]}" alt="Visual concept for product idea">` : '';
+                        renderedHtml = renderedHtml.replace(placeholder, placeholder + imageHtml);
+                    });
+                }
+                
+                reportOutput.innerHTML = renderedHtml;
 
             } catch (error) {
                 console.error('Error:', error);
