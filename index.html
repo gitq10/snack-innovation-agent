@@ -1,170 +1,262 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snack Innovation Generator</title>
+    <title>Innovation Report Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
         }
-
-        h1 { color: #222; }
-        h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 30px; }
-        h3 { color: #444; margin-top: 20px; }
-        h4 { color: #555; margin-top: 15px; }
-
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 30px;
-            border: 1px solid #ccc;
+            max-width: 90%;
+        }
+        .report-section {
+            background-color: white;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
         }
-
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        select, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
+        .report-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.75rem;
         }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
+        .question-button {
+            background-color: #e5e7eb;
+            color: #4b5563;
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
             cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
+            transition: all 0.2s ease-in-out;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
-
-        button:hover { background-color: #45a049; }
-
-        #reportOutput {
-            margin-top: 40px;
-            border-top: 2px solid #eee;
-            padding-top: 30px;
+        .question-button:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-
-        #reportOutput table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
+        .input-group {
+            display: grid;
+            gap: 1rem;
         }
-
-        #reportOutput th, #reportOutput td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        #reportOutput th { background-color: #f2f2f2; font-weight: bold; }
-
-        #reportOutput ul {
-            list-style-type: disc;
-            margin-left: 25px;
-            padding: 5px 0;
-        }
-
-        #reportOutput p {
-            margin-bottom: 10px;
-        }
-
-        #reportOutput img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        @media (min-width: 768px) {
+            .input-group {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
-<body>
-    <!-- Markdown rendering library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-8">
+    <div class="container mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Innovation Report Generator</h1>
+            <p class="text-gray-600">Enter details to generate a comprehensive market innovation report.</p>
+        </header>
 
-    <div class="container">
-        <h1>Generate Your Snack Innovation Report</h1>
-
-        <label for="productType">Product Type:</label>
-        <select id="productType">
-            <option value="Snack">Snack</option>
-            <option value="Beverage">Beverage</option>
-        </select>
-
-        <label for="ingredients">Ingredients (e.g., Coconut, Mango):</label>
-        <input type="text" id="ingredients" value="Coconut" placeholder="Enter ingredients, comma-separated">
-
-        <label for="region">Region:</label>
-        <input type="text" id="region" value="Mexico" placeholder="Enter region (e.g., Mexico, Global)">
-
-        <button onclick="generateReport()">Generate Report</button>
-
-        <div id="reportOutput">
-            <!-- Report will be displayed here -->
+        <!-- Input Form -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <form id="report-form" class="space-y-6">
+                <div class="input-group">
+                    <div>
+                        <label for="product-type" class="block text-sm font-medium text-gray-700">Product Type</label>
+                        <input type="text" id="product-type" name="product-type" value="Snack"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                    </div>
+                    <div>
+                        <label for="ingredients" class="block text-sm font-medium text-gray-700">Ingredients</label>
+                        <input type="text" id="ingredients" name="ingredients" value="Coconut"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                    </div>
+                    <div>
+                        <label for="region" class="block text-sm font-medium text-gray-700">Region</label>
+                        <input type="text" id="region" name="region" value="Mexico"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <button type="submit"
+                            class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150">
+                        Generate Report
+                    </button>
+                </div>
+            </form>
         </div>
+
+        <!-- Loading & Error Messages -->
+        <div id="loading" class="hidden text-center text-gray-600 mb-4">
+            <svg class="animate-spin h-8 w-8 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-2">Generating report, please wait...</p>
+        </div>
+        <div id="error-message" class="hidden text-center text-red-500 mb-4"></div>
+
+        <!-- Report Container -->
+        <div id="report-container" class="space-y-8"></div>
     </div>
 
-    <script>
-        async function generateReport() {
-            const productType = document.getElementById('productType').value;
+    <script type="module">
+        // Import the required Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase and API configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const auth = getAuth(initializeApp(firebaseConfig));
+        const db = getFirestore(initializeApp(firebaseConfig));
+        const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        let userId = null;
+
+        // Ensure all Firestore operations wait for auth to be ready
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                console.log("Firebase Auth Ready. User ID:", userId);
+            } else {
+                console.log("Signing in anonymously...");
+                await signInAnonymously(auth);
+            }
+        });
+
+        // Function to create a custom modal
+        function createModal(message) {
+            // Remove any existing modal
+            const existingModal = document.getElementById('custom-modal');
+            if (existingModal) existingModal.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'custom-modal';
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50';
+            modal.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-auto">
+                    <div class="flex justify-between items-start">
+                        <p class="text-gray-700">${message}</p>
+                        <button class="text-gray-400 hover:text-gray-600 text-2xl leading-none" onclick="document.getElementById('custom-modal').remove();">&times;</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const form = document.getElementById('report-form');
+        const reportContainer = document.getElementById('report-container');
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productType = document.getElementById('product-type').value;
             const ingredients = document.getElementById('ingredients').value;
             const region = document.getElementById('region').value;
-            const reportOutput = document.getElementById('reportOutput');
 
-            reportOutput.innerHTML = '<p>Generating your report... this may take a moment.</p>';
+            await generateReport({ productType, ingredients, region });
+        });
+
+        // Handle follow-up questions
+        window.handleFollowUp = async (question) => {
+            console.log("Handling follow-up question:", question);
+            await generateReport({ followUpPrompt: question });
+        };
+
+
+        async function generateReport(promptData) {
+            loadingDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            reportContainer.innerHTML = '';
 
             try {
-                const url = window.location.protocol + "//" + window.location.host + "/.netlify/functions/generate-report";
-
-                const response = await fetch(url, {
+                const response = await fetch('/.netlify/functions/generate-report', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productType, ingredients, region }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(promptData),
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to generate report.');
                 }
 
                 const data = await response.json();
-                
-                // Render the markdown text
-                const reportText = data.report;
-                const images = data.images;
-
-                let renderedHtml = marked.parse(reportText);
-
-                // Find where to insert images
-                const imagePlaceholders = renderedHtml.match(/<p>.*Section D.*<\/p>/g);
-                if (imagePlaceholders) {
-                    imagePlaceholders.forEach((placeholder, index) => {
-                        const imageHtml = images[index] ? `<img src="${images[index]}" alt="Visual concept for product idea">` : '';
-                        renderedHtml = renderedHtml.replace(placeholder, placeholder + imageHtml);
-                    });
-                }
-                
-                reportOutput.innerHTML = renderedHtml;
+                renderReport(data);
 
             } catch (error) {
-                console.error('Error:', error);
-                reportOutput.innerHTML = `<p style="color: red;">Error generating report: ${error.message}. Please try again.</p>`;
+                console.error('Error generating report:', error);
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                loadingDiv.classList.add('hidden');
             }
         }
+
+        async function renderReport(reportContent) {
+            reportContainer.innerHTML = ''; // Clear previous report
+            const sections = reportContent.split('**SECTION');
+
+            sections.forEach(section => {
+                if (section.trim() === '') return;
+
+                const sectionParts = section.split(':');
+                const sectionTitle = sectionParts[0].trim();
+                const sectionBody = sectionParts.slice(1).join(':').trim();
+
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'report-section';
+
+                const titleElement = document.createElement('h2');
+                titleElement.className = 'report-section-title';
+                titleElement.textContent = `SECTION ${sectionTitle}`;
+                sectionDiv.appendChild(titleElement);
+
+                // Handle special formatting for the follow-up section
+                if (sectionTitle.includes('8 - Follow-Up Explorer')) {
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'space-y-4';
+                    const lines = sectionBody.split('\n');
+                    lines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('* [')) {
+                            const question = trimmedLine.substring(trimmedLine.indexOf('[') + 1, trimmedLine.indexOf(']'));
+                            const button = document.createElement('button');
+                            button.className = 'question-button';
+                            button.textContent = question;
+                            button.onclick = () => window.handleFollowUp(question);
+                            contentDiv.appendChild(button);
+                        } else {
+                            const p = document.createElement('p');
+                            p.className = 'text-gray-600';
+                            p.textContent = trimmedLine;
+                            contentDiv.appendChild(p);
+                        }
+                    });
+                    sectionDiv.appendChild(contentDiv);
+                } else {
+                    const p = document.createElement('div');
+                    p.innerHTML = marked.parse(sectionBody);
+                    sectionDiv.appendChild(p);
+                }
+
+                reportContainer.appendChild(sectionDiv);
+            });
+        }
+        
+        // Load the marked.js library for Markdown rendering
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+        document.head.appendChild(script);
+
     </script>
 </body>
 </html>
