@@ -10,7 +10,6 @@ exports.handler = async function(event, context) {
 
     const { productType, ingredients, region } = JSON.parse(event.body);
 
-    // Access your API key (securely stored in Netlify Environment Variables)
     const API_KEY = process.env.GEMINI_API_KEY;
 
     if (!API_KEY) {
@@ -21,155 +20,203 @@ exports.handler = async function(event, context) {
     }
 
     const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using a faster model for text and structured output
+    // Use an image generation model
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-preview-image-generation" });
 
+    // The user's new prompt, modified to request image generation
     const prompt = `
-        **IMPORTANT: Format the entire response using Markdown for clear readability, including bold text, headings (#, ##, ###), subheadings, bullet points (-), and tables (| --- |). Ensure all sections are clearly delimited by Markdown headings.**
-
-        Generate a data-driven, credible, and visually compelling innovation report.
-        Product Type: ${productType}
-        Ingredients: ${ingredients}
-        Region: ${region}
-
+        You are an expert in social media listening, emerging food & beverage trends, and high-potential product innovation.
+        
+        Your task is to generate a **visually clear, data-driven, and innovation-focused report** based on the following inputs:
+        
+        - Product Type: ${productType}
+        - Ingredients: ${ingredients}
+        - Region: ${region}
+        
         ---
-
-        # Innovation Focus
+        
+        # 📘 Innovation Report Structure
+        
+        Use bold headers and concise formatting to make it easy to scan. Follow this exact format:
+        
+        ---
+        
+        ## ✅ Innovation Focus
+        
         - Type of Innovation = ${productType}
         - Ingredients = ${ingredients}
         - Region Focus = ${region}
-
+        
         ---
-
-        NOTE - VERY IMPORTANT
-        1. If a single ingredients is selected then use that one ingredient for the analysis.
-        2. IF Two or more ingredients are combined then evaluate by combining 2 or more ingredients selected.
-        3. Each analysis should focus on the local region based on the country selected. If global then it will be a general analysis.
-
-        ## SECTION 1: GENERAL LANDSCAPE
-        Research and write up 5 prominent headlines.
-
-        ## SECTION 2: INGREDIENT Digital Market Strength
-        - For the ingredient or combined ingredients selected:
-          - Total social media mentions within past 12 months
-          - Overall sentiment (positive %, neutral %, negative %)
-          - Strength of single Ingredient or multiple ingredients combined combo - If more than 1500 mentions within past 12 months then strong.
-          - Platforms analyzed (Analyze and write for each platform):
-        - TikTok
-        - Instagram
-        - Twitter
-        - Reddit
-        - Facebook
-        - Forums
-        - Trend-Based Websites
-        - Other Sources
-
-        Include citations where possible (e.g., TikTok, Statista, Reddit thread, Google Trends, etc.)
-
-
-        ## SECTION 3 - Cross-Platform Trend Insights (Last 12 Months)
-        Summarize 5 most prominent trends across the platforms above.
-        Use bullets. Keep it quantitative and focused on emerging consumer preferences.
-
-        ## SECTION 4 - Existing Market Landscape
-        - List 2–3 existing snack/beverage products that exists which have the ingredients.
-        - Show sales, market size or estimated units if available for each product
-        - Add sources or benchmarks (Statista, Mintel, public reports, or GPT-generated reference estimate)
-
-
-        ## SECTION 5 - High-Strength Innovation Opportunities
-        Generate 5 unique ideas (new concepts)
-
-        VERY IMPPRTANT.
-        FOR EACH IDEA SHOW THE BELOW INFORMATION WITHIN EACH CONCEPT. EACH CONCEPT SHOULD HAVE SECTION A TO SECTION D.
-
-        ### Section A
-        - Product Name + Description
-        - Estimated annual unit sales by segment. Validate why the estimates could be accurate. We need to provide fact based valid information. If cannot find fact based information then answer NA.
-
+        
+        ## 🌐 Section 1: General Landscape
+        
+        Provide **5 brief headlines** about the regional or global opportunity landscape related to the product type or ingredients. Use real or modeled data from credible trend or market sources. Keep it impactful.
+        
+        ---
+        
+        ## 📈 Section 2: Ingredient Digital Market Strength
+        
+        For the selected ingredient(s), provide:
+        - Total social media mentions in the past 12 months
+        - Overall sentiment (positive %, neutral %, negative %)
+        - If >1500 mentions → label it “Strong”
+        - Analyze separately per platform:
+          - TikTok
+          - Instagram
+          - Twitter
+          - Reddit
+          - Facebook
+          - Forums
+          - Trend websites
+          - Other (if notable)
+        
+        Use source brackets like *(Tastewise, 2025)* where possible.
+        
+        ---
+        
+        ## 🔥 Section 3: Cross-Platform Trend Insights (Last 12 Months)
+        
+        Summarize **5 key trend bullets** across platforms that highlight:
+        - Emerging consumer preferences
+        - Popular behaviors
+        - Content trends
+        - Unexpected shifts
+        
+        Make each bullet **quantitative + insightful**.
+        
+        ---
+        
+        ## 🏪 Section 4: Existing Market Landscape
+        
+        List 2–3 existing products using the ingredient(s):
+        - Product name + description
+        - Estimated unit sales or size
+        - Source or modeled estimate
+        
+        Use bullet format. Focus on relevance, not generality.
+        
+        ---
+        
+        ## 🚀 Section 5: High-Strength Innovation Opportunities
+        
+        In Section 5, generate **5 full product concepts**, each with its own labeled breakdown:
+        **Concept 1, Concept 2, Concept 3, Concept 4, Concept 5**
+        
+        Each concept should have its own clearly labeled:
+        
+        - Section A – Product & Demographics
+        - Section B – Appeal & Benefits
+        - Section C – Market Gaps & Strategic Opportunities
+        - Section D – Visual Packaging Description and Image
+        
+        
+        ### 🧪 Section A – Product & Demographics
+        
+        - Product Name + 1-line Description
+        - Estimated unit sales per segment:
+        
           | Segment       | Est. Units/Year |
           |---------------|-----------------|
-          | Gen Alpha     |                 |
-          | Gen Z         |                 |
-          | Millennials   |                 |
-          | Gen X         |                 |
-          | Boomers       |                 |
-          | Male          |                 |
-          | Female        |                 |
-
-        ### Section B
-        - Top 5 Countries this concept will be succesful (ranked by popularity potential)
-        - Estimated global units/year
-        - Key Functional Benefits (e.g., energy, focus, gut health)
-        - Key Emotional Benefits (e.g., indulgence, nostalgia, fun)
+          | Gen Alpha     | ...             |
+          | Gen Z         | ...             |
+          | Millennials   | ...             |
+          | Gen X         | ...             |
+          | Boomers       | ...             |
+          | Male          | ...             |
+          | Female        | ...             |
+        
+        *Add a short justification for why these estimates are logical.*
+        
+        ---
+        
+        ### 🌍 Section B – Appeal & Benefits
+        
+        - Top 5 countries this will perform well in (ranked)
+        - Global unit estimate
+        - Functional Benefits
+        - Emotional Benefits
         - Flavor & Texture Highlights
-        - Positioning Angle or Tagline
-
-        ### Section C
-
-        #### Market Gaps & Strategic Opportunities
-        Identify whitespace opportunities:
-        - Unmet Flavor Profiles
-        - Holistic Wellness Integrations
-        - Missing Consumption Occasions (e.g., post-work, study breaks)
-        - Texture Innovations
-
-        ### Section D
-
-        #### Visual Generation (Image Required) - DO NOT GENERATE IMAGE PROMPTS. GENERATE VISUALLY APPEALING CONCEPT IMAGES.
-        For each of the 5 product ideas:
-        - Create an artistic and photorealistic image of the **final packaged snack or beverage**
-        - Ensure it reflects the *ingredient profile*, *target audience*, and *trend aesthetic*
-        - Use modern packaging cues that would appeal on social media
-        - **IMPORTANT: For each image, provide the direct image URL immediately after the Section D heading.**
-
-
-        ## SECTION 6 - Data Confidence & Source Attribution
-        Include the following statement at the end of the report:
-
-        Data Confidence & Source Attribution
-        All estimates in this report are based on real-time social media listening, keyword trend analytics, and comparative market modeling. Sources may include TikTok, Reddit, Statista, Google Trends, Euromonitor, Mintel, and public brand data. Forecasts are directional and intended to guide innovation decisions. Whenever a statistic or trend is cited, include the source in brackets like *(TikTok Hashtag Tracker, 2025)*.
-
+        - Tagline or Positioning Angle
+        
         ---
-
-        ## SECTION 7 - Final Summary
-        End the report with a 5-point summary of the most important insights within the report generated:
-        - Top ingredient opportunities
-        - Best product idea
-        - Strongest demographic match
-        - Most promising countries
-        - Key whitespace innovation gap
-
+        
+        ### 🔍 Section C – Market Gaps & Strategic Opportunities
+        
+        Use bullets to identify:
+        - Unmet flavor profiles
+        - Holistic wellness integrations
+        - Underserved consumption occasions
+        - Texture gaps
+        
         ---
-
-        ## SECTION 8 - Follow-Up Explorer (Clickable Questions Only)
-        End with 8 questions, split into two categories:
-
-        ### Information-Based
-        - Compare snack vs. beverage potential for the same ingredients
-        - Show historical trend curve for this ingredient
-        - Add competitor case studies
-        - Explore ingredient sentiment by platform
-
-        ### Innovation-Based
-        - Generate a celebrity-endorsed version
-        - Create a subscription box experience
-        - Add dual flavor twist
-        - Include sensory experience (scent/sound/touch)
-
-        NOTE - Make each question clickable. OnClick it automatically transfer the questions as a prompt in the backend and continues the conversation.
-
-        Your response should be formatted as a full, complete innovation report, following all the sections and instructions above. Do not include any conversational text outside of the report itself. For image generation, just provide the image URL from the Google Generative AI response.
+        
+        ### 🎨 Section D – Visual Packaging Description and Image
+        
+        **Generate a photorealistic image of the final packaged snack or beverage for this concept.**
+        
+        **VERY IMPORTANT:** Provide a brief, vivid description of the image first, and then include the image itself immediately after the description.
+        
+        ---
+        
+        ## 🔎 Section 6 – Data Confidence & Source Attribution
+        
+        Include the following paragraph:
+        
+        > All estimates are based on real-time social media listening, keyword analytics, and comparative modeling using tools such as TikTok, Reddit, Google Trends, Statista, Mintel, and public brand data. Forecasts are directional and intended to inspire innovation decisions. *(e.g., TikTok Hashtag Tracker, 2025)*
+        
+        ---
+        
+        ## 🧭 Section 7 – Final Summary
+        
+        List 5 quick takeaways:
+        - Best ingredient opportunity
+        - Most scalable product concept
+        - Demographic group with highest demand
+        - Most promising region
+        - Most innovative whitespace to act on
+        
+        ---
+        
+        ## 💬 Section 8 – Follow-Up Explorer
+        
+        Provide **4 information-based** and **4 innovation-based** questions relevant to the report.
+        Present each as a short clickable question (no explanation, no answer).
+        
+        Label them:
+        - Information-Based
+        - Innovation-Based
+        
+        Format each like:
+        - [What’s the trend curve for Gen Z snacking habits?]
+        - [Add a sparkling water version of concept 2]
+        
+        ---
+        
+        Your response should be formatted as a full, complete innovation report, following all the sections and instructions above. Do not include any conversational text outside of the report itself.
         `;
 
     try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        const result = await model.generateContent({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                responseModalities: ["TEXT", "IMAGE"],
+            }
+        });
+        const response = result.response;
+        
+        const textPart = response.candidates[0].content.parts.find(p => p.text);
+        const imageParts = response.candidates[0].content.parts.filter(p => p.inlineData && p.inlineData.mimeType.startsWith('image/'));
 
+        const images = imageParts.map(part => `data:image/png;base64,${part.inlineData.data}`);
+        
         return {
             statusCode: 200,
-            headers: { "Content-Type": "text/markdown" },
-            body: JSON.stringify({ report: text })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                report: textPart ? textPart.text : '',
+                images: images
+            })
         };
     } catch (error) {
         console.error("Gemini API Error:", error);
