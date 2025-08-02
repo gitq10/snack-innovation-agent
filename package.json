@@ -1,0 +1,15 @@
+{
+  "name": "snack-innovation-agent",
+  "version": "1.0.0",
+  "description": "AI Snack Innovation Report Generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.1.0"
+  }
+}
