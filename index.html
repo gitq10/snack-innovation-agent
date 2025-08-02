@@ -37,11 +37,37 @@
             </div>
     </div>
 
-    <script>
-        // This is where our JavaScript "Magic Messenger" will go later!
-        function generateReport() {
-            alert("Report generation functionality will be added here!");
+<script>
+    async function generateReport() {
+        const productType = document.getElementById('productType').value;
+        const ingredients = document.getElementById('ingredients').value;
+        const region = document.getElementById('region').value;
+        const reportOutput = document.getElementById('reportOutput');
+
+        reportOutput.innerHTML = '<p>Generating your report... this may take a moment.</p>';
+
+        try {
+            const response = await fetch('/.netlify/functions/generate-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productType, ingredients, region }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            reportOutput.innerHTML = data.report; // Display the raw report (which includes images)
+
+        } catch (error) {
+            console.error('Error:', error);
+            reportOutput.innerHTML = `<p style="color: red;">Error generating report: ${error.message}. Please try again.</p>`;
         }
-    </script>
+    }
+</script>
 </body>
 </html>
