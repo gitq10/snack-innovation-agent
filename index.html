@@ -1,21 +1,91 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snack Innovation Generator</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
         h1 { color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        h2 { color: #444; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
+        h3 { color: #555; margin-top: 15px; }
+        h4 { color: #666; margin-top: 10px; }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        select, input[type="text"] { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
         button:hover { background-color: #45a049; }
-        #reportOutput { margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+
+        #reportOutput {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        #reportOutput table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        #reportOutput th, #reportOutput td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #reportOutput th { background-color: #f2f2f2; }
+
+        #reportOutput ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        #reportOutput img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
+    <!-- Markdown rendering library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
+
     <div class="container">
         <h1>Generate Your Snack Innovation Report</h1>
 
@@ -34,40 +104,44 @@
         <button onclick="generateReport()">Generate Report</button>
 
         <div id="reportOutput">
-            </div>
+            <!-- Report will be displayed here -->
+        </div>
     </div>
 
-<script>
-    async function generateReport() {
-        const productType = document.getElementById('productType').value;
-        const ingredients = document.getElementById('ingredients').value;
-        const region = document.getElementById('region').value;
-        const reportOutput = document.getElementById('reportOutput');
+    <script>
+        async function generateReport() {
+            const productType = document.getElementById('productType').value;
+            const ingredients = document.getElementById('ingredients').value;
+            const region = document.getElementById('region').value;
+            const reportOutput = document.getElementById('reportOutput');
 
-        reportOutput.innerHTML = '<p>Generating your report... this may take a moment.</p>';
+            reportOutput.innerHTML = '<p>Generating your report... this may take a moment.</p>';
 
-        try {
-            const response = await fetch('/.netlify/functions/generate-report', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ productType, ingredients, region }),
-            });
+            try {
+                // Construct an absolute URL for the Netlify function
+                const url = window.location.protocol + "//" + window.location.host + "/.netlify/functions/generate-report";
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productType, ingredients, region }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                reportOutput.innerHTML = marked.parse(data.report);
+
+            } catch (error) {
+                console.error('Error:', error);
+                reportOutput.innerHTML = `<p style="color: red;">Error generating report: ${error.message}. Please try again.</p>`;
             }
-
-            const data = await response.json();
-            reportOutput.innerHTML = data.report; // Display the raw report (which includes images)
-
-        } catch (error) {
-            console.error('Error:', error);
-            reportOutput.innerHTML = `<p style="color: red;">Error generating report: ${error.message}. Please try again.</p>`;
         }
-    }
-</script>
+    </script>
 </body>
 </html>
